@@ -1,8 +1,25 @@
 var request = require('request');
+var express = require('express');
+var app = express();
 
-/**
- * A Bot for Slack!
- */
+app.listen(process.env.BOTPORT, () => {
+    console.log('We are live on port ' + process.env.BOTPORT);
+});
+
+app.get( '/', function ( req, res ) {
+    res.send( 'Statusbot is live' );
+} );
+
+var CronJob = require('cron').CronJob;
+new CronJob('*/5 * * * *', function() {
+    console.log('Executing CRON request (keeping the Salesforce token alive)');
+    var requestUrl = "https://status-backend.stage.eu.magalog.net/status/braunhamburg";
+    request(requestUrl, function (error, response, body) {
+        if (!error) {
+            console.log('Request executed');
+        }
+    });
+}, null, true, 'Europe/Berlin');
 
 
 /**
@@ -80,7 +97,6 @@ controller.on('rtm_close', function (bot) {
 /**
  * Core bot logic goes here!
  */
-// BEGIN EDITING HERE!
 
 controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
@@ -146,21 +162,3 @@ controller.hears('status', 'direct_message,mention,direct_mention', function (bo
 
     });
 });
-
-
-/**
- * AN example of what could be:
- * Any un-handled direct mention gets a reaction and a pat response!
- */
-//controller.on('direct_message,mention,direct_mention', function (bot, message) {
-//    bot.api.reactions.add({
-//        timestamp: message.ts,
-//        channel: message.channel,
-//        name: 'robot_face',
-//    }, function (err) {
-//        if (err) {
-//            console.log(err)
-//        }
-//        bot.reply(message, 'I heard you loud and clear boss.');
-//    });
-//});
