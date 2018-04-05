@@ -1,6 +1,7 @@
 var request = require('request');
 var express = require('express');
 var app = express();
+var _ = require('lodash');
 
 app.listen(process.env.BOTPORT, () => {
     console.log('We are live on port ' + process.env.BOTPORT);
@@ -88,13 +89,32 @@ controller.hears('status', 'direct_message,mention,direct_mention', function (bo
             "attachments": [
                 {
                     "title": "Not found",
-                    "text": 'We dont have anything similar to ' + domainName + ' in our records',
+                    "text": 'We dont have anything similar to ' + domainName + ' in our records.',
                 },
                 ]
             };
 
         bot.reply(message, response);
         return;
+        }
+
+        var validResults = _.filter(body, function(x) {
+            return x.Magazine_URL__c != null;
+        });
+
+        if (!validResults.length){
+            var clientName = _.find(body, 'Name');
+            response = {
+                "text": 'You searched for: ' + domainName,
+                "attachments": [
+                    {
+                        "title": "No magazines found",
+                        "text": 'Client *' + clientName.Name + '* exists but no Magazines are available.',
+                    },
+                ]
+            };
+            bot.reply(message, response);
+            return;
         }
 
         body.forEach((e)=>{
