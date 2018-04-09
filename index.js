@@ -70,7 +70,8 @@ controller.hears('hello', 'direct_message,mention,direct_mention', function (bot
     bot.reply(message, 'Hello!');
 });
 
-controller.hears('status', 'direct_message,mention,direct_mention', function (bot, message) {
+
+controller.hears('.*', 'direct_message,mention,direct_mention', function (bot, message) {
     var messageText = message.text;
     var domainName = messageText.replace('status ', '');
 
