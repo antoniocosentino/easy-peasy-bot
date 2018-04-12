@@ -75,7 +75,7 @@ controller.hears('.*', 'direct_message,mention,direct_mention', function (bot, m
     var messageText = message.text;
     var domainName = messageText.replace('status ', '');
 
-    var requestUrl = "https://status-backend.stage.eu.magalog.net/status/" + domainName;
+    var requestUrl = process.env.STATUS_API_URL + domainName;
     console.log(requestUrl);
     request(requestUrl, function (error, response, body) {
         body = JSON.parse(body);
